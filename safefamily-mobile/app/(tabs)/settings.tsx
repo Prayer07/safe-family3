@@ -16,7 +16,7 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>⚙️ Settings</Text>
-      <Text style={styles.text}>Signed in as: {user?.name ?? "Unknown"}</Text>
+      <Text style={styles.text}>Signed in as: {user?.name ?? "Guest"}</Text>
 
       <Pressable style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Log out</Text>
