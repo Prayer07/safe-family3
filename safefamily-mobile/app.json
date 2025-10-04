@@ -5,11 +5,7 @@
     "scheme": "safefamily",
     "version": "1.0.0",
     "extra": {
-      "env": "production",
-      "router": {},
-      "eas": {
-        "projectId": "21d023ef-4aa3-4025-a292-fe0f1aeb6366"
-      }
+      "env": "production"
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
