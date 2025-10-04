@@ -11,15 +11,15 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#1E90FF",
       }}
     >
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="index"
         options={{
           title: "Map",
           tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" size={size} color={color} />,
         }}
-      /> */}
+      />
       <Tabs.Screen
-        name="index"
+        name="members"
         options={{
           title: "Members",
           tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} />,
