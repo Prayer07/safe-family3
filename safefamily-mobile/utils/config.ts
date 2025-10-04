@@ -11,7 +11,7 @@ const CONFIG = {
     API_URL: "http://10.165.37.65:5000/api", // replace with LAN IPv4
   },
   staging: {
-    API_URL: "https://safe-family3.onrender.com/api",
+    API_URL: "https://safe-family.onrender.com/api",
   },
   production: {
     API_URL: "https://safe-family3.onrender.com/api",
