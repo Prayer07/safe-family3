@@ -1,6 +1,7 @@
 // app/(tabs)/members.tsx
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, Alert, TouchableOpacity } from "react-native";
+import * as Clipboard from "expo-clipboard";  // 👈 import clipboard
 import { apiFetch } from "../../utils/apiClient";
 
 interface Member {
@@ -14,15 +15,23 @@ interface Member {
   lastKnownLng?: number | null;
 }
 
+interface FamilyResponse{
+  inviteCode: string;
+  members: Member[]
+}
+
+
 export default function MembersScreen() {
   const [members, setMembers] = useState<Member[] | null>(null);
+  const [inviteCode, setInviteCode] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState(false);
 
     const load = async () => {
       try {
-        const data = await apiFetch<{ members: Member[] }>("/family/me");
+        const data = await apiFetch<FamilyResponse>("/family/me");
         setMembers(data.members);
+        setInviteCode(data.inviteCode);
       } catch (err) {
         console.error("Failed to fetch members:", (err as Error).message);
       } finally {
@@ -39,6 +48,13 @@ export default function MembersScreen() {
       await load()
       setRefreshing(false)
     }, [])
+
+    const copyInviteCode = async () => {
+      if (inviteCode) {
+        await Clipboard.setStringAsync(inviteCode);
+        Alert.alert("Copied ✅", "Invite code copied to clipboard!");
+      }
+    };
 
   if (loading) {
     return (
@@ -67,6 +83,11 @@ export default function MembersScreen() {
           <View style={styles.card}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.detail}>{item.phone ?? item.email ?? ""}</Text>
+            {/* <Text style={styles.detail}>Invite Code: {inviteCode ?? "***"}</Text> */}
+            <TouchableOpacity onPress={copyInviteCode}>
+              <Text style={styles.detail}>{inviteCode}</Text>
+            </TouchableOpacity>
+            <Text style={styles.detail}>Tap Invite code to copy</Text>
             <Text style={{ color: isOnline ? "green" : "gray" }}>{isOnline ? "Online" : "Offline"}</Text>
           </View>
         );
@@ -89,4 +110,17 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 16, fontWeight: "600" },
   detail: { color: "#6B7280" },
+  inviteCode: {
+    fontSize: 20,
+    fontWeight: "bold",
+    letterSpacing: 1.2,
+  },
+  copyText: {
+    fontSize: 14,
+    color: "#007AFF",
+    marginTop: 4,
+  },
+  copyButton: {
+    alignItems: "center",
+  },
 });

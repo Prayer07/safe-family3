@@ -60,7 +60,10 @@ export const getMyFamily = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    const family = await Family.findOne({ members: userId }).populate("members", "name email phone avatarUrl lastActiveAt").lean();
+    const family = await Family.findOne({ members: userId })
+      .populate("members", "name email phone avatarUrl lastActiveAt")
+      .select("name inviteCode members")
+      .lean();
     if (!family) return res.status(404).json({ message: "No family" });
 
     res.json(family);

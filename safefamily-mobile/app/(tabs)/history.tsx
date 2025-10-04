@@ -5,7 +5,7 @@ import { apiFetch } from "../../utils/apiClient";
 
 type HistoryItem =
   | { _id: string; type: "location"; user: string; coords: { lat: number; lng: number }; timestamp: string }
-  | { _id: string; type: "sos"; triggeredBy: string; coords: { lat: number; lng: number }; status: string; timestamp: string };
+  | { _id: string; type: "sos"; triggeredBy: string; user: string; coords: { lat: number; lng: number }; status: string; timestamp: string };
 
 export default function HistoryScreen() {
   const [history, setHistory] = useState<HistoryItem[] | null>(null);
@@ -63,6 +63,7 @@ export default function HistoryScreen() {
             <>
               <Text style={styles.title}>🚨 SOS</Text>
               <Text>By: {item.triggeredBy}</Text>
+              {/* <Text>Member: {item.user ?? "Guest"}</Text> */}
               <Text>Status: {item.status}</Text>
               <Text>When: {new Date(item.timestamp).toLocaleString()}</Text>
             </>
