@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useRouter, Link } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
@@ -33,6 +33,7 @@ export default function LoginScreen() {
       router.replace("/"); // ✅ go to home after login
     } catch (err: any) {
       console.error("Login failed:", err.message);
+      Alert.alert("Login failed:", err.message)
     }finally{
       setLoading(false)
     }
