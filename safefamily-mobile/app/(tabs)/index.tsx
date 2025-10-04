@@ -1,40 +1,30 @@
-// app/(tabs)/map.tsx
+// app/(tabs)/members.tsx
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Pressable, ScrollView, RefreshControl } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
-import * as Location from "expo-location";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
 import { apiFetch } from "../../utils/apiClient";
 
-interface MemberLocation {
-  userId: string;
+interface Member {
+  _id: string;
   name: string;
-  lat: number;
-  lng: number;
+  email?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
   lastActiveAt?: string | null;
+  lastKnownLat?: number | null;
+  lastKnownLng?: number | null;
 }
 
-export default function MapScreen() {
-  const [region, setRegion] = useState<Region>({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
-  });
+export default function MembersScreen() {
+  const [members, setMembers] = useState<Member[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [members, setMembers] = useState<MemberLocation[]>([]);
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
     const load = async () => {
       try {
-        // fetch family members' last known locations
-        const data = await apiFetch<MemberLocation[]>("/location/family/last");
-        if (data.length > 0) {
-          const first = data[0];
-          setRegion((r) => ({ ...r, latitude: first.lat, longitude: first.lng }));
-        }
-        setMembers(data);
+        const data = await apiFetch<{ members: Member[] }>("/family/me");
+        setMembers(data.members);
       } catch (err) {
-        console.error("Failed to load locations:", (err as Error).message);
+        console.error("Failed to fetch members:", (err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -44,97 +34,59 @@ export default function MapScreen() {
       load()
     }, [])
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await load();
-    setRefreshing(false);
-  }, []);
-
-  const centerOnMe = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        alert("Location permission required");
-        return;
-      }
-      const pos = await Location.getCurrentPositionAsync({});
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      setRegion((r) => ({ ...r, latitude: lat, longitude: lng }));
-      // optional: post location to backend
-      await apiFetch("/location", {
-        method: "POST",
-        body: JSON.stringify({ lat, lng }),
-      });
-    } catch (err) {
-      console.error("Center on me failed:", (err as Error).message);
-    }
-  };
+    const onRefresh = useCallback(async () => {
+      setRefreshing(true)
+      await load()
+      setRefreshing(false)
+    }, [])
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" />
-        <Text>Loading map...</Text>
+      </View>
+    );
+  }
+
+  if (!members || members.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text>No members yet. Create or join a family.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
+    <FlatList
+      contentContainerStyle={{ padding: 16 }}
+      data={members}
+      keyExtractor={(item) => item._id}
+      renderItem={({ item }) => {
+        const isOnline = item.lastActiveAt ? Date.now() - new Date(item.lastActiveAt).getTime() < 5 * 60 * 1000 : false;
+        return (
+          <View style={styles.card}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.detail}>{item.phone ?? item.email ?? ""}</Text>
+            <Text style={{ color: isOnline ? "green" : "gray" }}>{isOnline ? "Online" : "Offline"}</Text>
+          </View>
+        );
+      }}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
       }
-    >
-    <View style={styles.container}>
-      <MapView style={styles.map} region={region} onRegionChangeComplete={(r) => setRegion(r)}>
-        {/* member markers */}
-        {members.map((m) => (
-          <Marker
-            key={m.userId}
-            coordinate={{ latitude: m.lat, longitude: m.lng }}
-            title={m.name}
-            description={m.lastActiveAt ? new Date(m.lastActiveAt).toLocaleString() : "Unknown"}
-          />
-        ))}
-      </MapView>
-
-      <Pressable style={[styles.fab, { bottom: 120 }]} onPress={centerOnMe}>
-        <Text style={styles.fabText}>Center</Text>
-      </Pressable>
-
-      <Pressable
-        style={[styles.fab, { bottom: 40, backgroundColor: "#FF3B30" }]}
-        onPress={async () => {
-          // navigate to SOS tab (expo-router link)
-          // or open modal; simplest: call SOS endpoint with current location
-          const pos = await Location.getCurrentPositionAsync({});
-          await apiFetch("/sos/trigger", {
-            method: "POST",
-            body: JSON.stringify({ coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } }),
-          });
-          alert("SOS triggered");
-        }}
-      >
-        <Text style={styles.fabText}>SOS</Text>
-      </Pressable>
-    </View>
-    </ScrollView>
+      ListEmptyComponent={<Text>No members found.</Text>}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { flex: 1 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  fab: {
-    position: "absolute",
-    right: 20,
-    padding: 14,
-    borderRadius: 30,
-    backgroundColor: "#1E90FF",
-    elevation: 4,
+  card: {
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#F2FAFF",
+    marginBottom: 10,
   },
-  fabText: { color: "#fff", fontWeight: "700" },
+  name: { fontSize: 16, fontWeight: "600" },
+  detail: { color: "#6B7280" },
 });
