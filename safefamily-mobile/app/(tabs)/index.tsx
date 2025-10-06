@@ -185,7 +185,7 @@ export default function MapScreen() {
         )}
 
         <Pressable style={[styles.fab, { bottom: 120 }]} onPress={centerOnMe}>
-          <Text style={styles.fabText}>📍</Text>
+          <Text style={styles.fabText}>ME</Text>
         </Pressable>
 
         <Pressable

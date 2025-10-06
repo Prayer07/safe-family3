@@ -5,6 +5,9 @@ import { useRouter } from "expo-router";
 import { apiFetch } from "../../utils/apiClient";
 // import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
+import ThemedText from "../../components/ThemedText";
+import ThemedTextInput from "../../components/ThemedTextInput";
+import ThemedView from "../../components/ThemedView";
 
 export default function JoinFamilyScreen() {
   const router = useRouter();
@@ -27,10 +30,10 @@ export default function JoinFamilyScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Join Family</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Join Family</ThemedText>
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Enter Invite Code"
         style={styles.input}
         onChangeText={(text) => setValue("inviteCode", text)}
@@ -41,7 +44,7 @@ export default function JoinFamilyScreen() {
           {loading? "Joining Family....." : "Join Family"}
         </Text>
       </Pressable>
-    </View>
+    </ThemedView>
   );
 }
 

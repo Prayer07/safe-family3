@@ -5,6 +5,9 @@ import { useRouter } from "expo-router";
 import { apiFetch } from "../../utils/apiClient";
 // import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
+import ThemedText from "../../components/ThemedText";
+import ThemedTextInput from "../../components/ThemedTextInput";
+import ThemedView from "../../components/ThemedView";
 
 export default function CreateFamilyScreen() {
   const router = useRouter();
@@ -28,10 +31,10 @@ export default function CreateFamilyScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Family</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Create Family</ThemedText>
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Family Name"
         style={styles.input}
         onChangeText={(text) => setValue("name", text)}
@@ -42,7 +45,7 @@ export default function CreateFamilyScreen() {
           {loading? "Creating Family....." : "Create Family"}
         </Text>
       </Pressable>
-    </View>
+    </ThemedView>
   );
 }
 

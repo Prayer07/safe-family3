@@ -1,14 +1,21 @@
 // app/(tabs)/_layout.tsx
-import { Tabs } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { useColorScheme } from "react-native";
+import { Colors } from "../../constants/Color";
 
 export default function TabsLayout() {
+  const colorScheme = useColorScheme()
+
+  const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.light
   return (
+    <>
     <Tabs
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: "#1E90FF",
+        tabBarStyle: {backgroundColor: theme.background}
       }}
     >
       <Tabs.Screen
@@ -47,5 +54,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </>
   );
 }

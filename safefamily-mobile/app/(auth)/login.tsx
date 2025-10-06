@@ -5,6 +5,9 @@ import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-nativ
 import { useRouter, Link } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
+import ThemedText from "../../components/ThemedText";
+import ThemedTextInput from "../../components/ThemedTextInput";
+import ThemedView from "../../components/ThemedView";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -40,19 +43,21 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Login</ThemedText>
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Email"
+        placeholderTextColor= {""}
         style={styles.input}
         keyboardType="email-address"
         onChangeText={(text) => setValue("email", text)}
       />
       {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Password"
+        placeholderTextColor={""}
         style={styles.input}
         secureTextEntry
         onChangeText={(text) => setValue("password", text)}
@@ -67,13 +72,13 @@ export default function LoginScreen() {
         </Text>
       </Pressable>
 
-      <Text style={styles.footer}>
+      <ThemedText style={styles.footer}>
         Don’t have an account?{" "}
         <Link href="/signup" style={styles.link}>
           Sign Up
         </Link>
-      </Text>
-    </View>
+      </ThemedText>
+    </ThemedView>
   );
 }
 

@@ -1,13 +1,15 @@
 // app/welcome.tsx
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import ThemedView from "../components/ThemedView";
+import ThemedText from "../components/ThemedText";
 
 export default function Welcome() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      {/* <Text style={styles.title}>Welcome to Safe Family</Text> */}
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Select One</ThemedText>
 
       <Pressable
         style={styles.button}
@@ -26,7 +28,7 @@ export default function Welcome() {
       {/* <Pressable onPress={() => router.push("/login")}>
         <Text style={styles.link}>Already have an account? Login</Text>
       </Pressable> */}
-    </View>
+    </ThemedView>
   );
 }
 

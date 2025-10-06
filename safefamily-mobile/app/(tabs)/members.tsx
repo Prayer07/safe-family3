@@ -84,10 +84,12 @@ export default function MembersScreen() {
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.detail}>{item.phone ?? item.email ?? ""}</Text>
             {/* <Text style={styles.detail}>Invite Code: {inviteCode ?? "***"}</Text> */}
-            <TouchableOpacity onPress={copyInviteCode}>
-              <Text style={styles.detail}>{inviteCode}</Text>
-            </TouchableOpacity>
-            <Text style={styles.detail}>Tap Invite code to copy</Text>
+            <Text style={styles.detail}>
+              <TouchableOpacity onPress={copyInviteCode}>
+                <Text style={{color: "#1E90FF", fontWeight: "condensedBold"}}>{inviteCode} {"    "}</Text>
+              </TouchableOpacity>
+                tap to copy
+            </Text>
             <Text style={{ color: isOnline ? "green" : "gray" }}>{isOnline ? "Online" : "Offline"}</Text>
           </View>
         );

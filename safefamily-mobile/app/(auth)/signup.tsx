@@ -5,6 +5,9 @@ import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-nativ
 import { useRouter, Link } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
+import ThemedTextInput from "../../components/ThemedTextInput";
+import ThemedText from "../../components/ThemedText";
+import ThemedView from "../../components/ThemedView";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -35,24 +38,24 @@ export default function SignupScreen() {
       router.replace("/onboarding"); // ✅ go to home after signup
     } catch (err: any) {
       console.error("Signup failed:", err.message);
-      Alert.alert("Login failed:", err.message)
+      Alert.alert("Signup failed:", err.message)
     }finally{
       setLoading(false)
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Sign Up</ThemedText>
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Name"
         style={styles.input}
         onChangeText={(text) => setValue("name", text)}
       />
       {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Email"
         style={styles.input}
         keyboardType="email-address"
@@ -60,7 +63,7 @@ export default function SignupScreen() {
       />
       {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Phone"
         style={styles.input}
         keyboardType="phone-pad"
@@ -68,7 +71,7 @@ export default function SignupScreen() {
       />
       {errors.phone && <Text style={styles.error}>{errors.phone.message}</Text>}
 
-      <TextInput
+      <ThemedTextInput
         placeholder="Password"
         style={styles.input}
         secureTextEntry
@@ -84,13 +87,13 @@ export default function SignupScreen() {
         </Text>
       </Pressable>
 
-      <Text style={styles.footer}>
+      <ThemedText style={styles.footer}>
         Already have an account?{" "}
         <Link href="/login" style={styles.link}>
           Login
         </Link>
-      </Text>
-    </View>
+      </ThemedText>
+    </ThemedView>
   );
 }
 
