@@ -8,7 +8,7 @@ export default {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon2.png",
-    userInterfaceStyle: "dark",
+    userInterfaceStyle: "automatic",
     newArchEnabled: true,
 
     splash: {
@@ -22,7 +22,7 @@ export default {
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY
       },
-      googleServicesFile: "./GoogleService-Info.plist" // 👈 Add this
+      // googleServicesFile: "./GoogleService-Info.plist" // 👈 Add this
     },
 
     android: {
@@ -52,7 +52,7 @@ export default {
         {
           icon: "./assets/notification-icon.png",
           color: "#FF3B30",
-          sounds: ["./assets/sos-alert.wav"]
+          // sounds: ["./assets/sos-alert.wav"]
         }
       ]
     ],
