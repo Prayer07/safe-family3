@@ -43,3 +43,5 @@ yarn-error.*
 .env
 
 safe-family-6adef-firebase-adminsdk-fbsvc-09458b6c12.json
+
+google-services.json
