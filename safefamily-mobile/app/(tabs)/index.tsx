@@ -12,6 +12,8 @@ import {
 import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { apiFetch } from "../../utils/apiClient";
+import * as Notifications from "expo-notifications";
+import { ExpoPushToken } from "expo-notifications";
 
 interface MemberLocation {
   userId: string;
@@ -122,13 +124,20 @@ export default function MapScreen() {
         accuracy: Location.Accuracy.High,
       });
 
-      await apiFetch("/sos/trigger", {
+      const tokenResponse: ExpoPushToken = await Notifications.getExpoPushTokenAsync();
+      const token = tokenResponse.data;
+      
+      console.log("Expo Token: " + token)
+
+      const res = await apiFetch("/sos/trigger", {
         method: "POST",
         body: JSON.stringify({
+          token,
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
         }),
       });
+      console.log('Response:', res);
 
       Alert.alert("✅ SOS Sent", "Your family has been notified!");
     } catch (err) {
