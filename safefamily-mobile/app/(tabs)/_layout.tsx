@@ -1,9 +1,10 @@
 // app/(tabs)/_layout.tsx
-import { Stack, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useColorScheme } from "react-native";
 import { Colors } from "../../constants/Color";
+import { StatusBar } from "expo-status-bar";
 
 export default function TabsLayout() {
   const colorScheme = useColorScheme()
@@ -11,6 +12,7 @@ export default function TabsLayout() {
   const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.light
   return (
     <>
+    <StatusBar style={colorScheme === "dark" ? "light" : "dark"} backgroundColor={theme.background} />
     <Tabs
       screenOptions={{
         headerShown: true,

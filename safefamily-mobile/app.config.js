@@ -7,7 +7,7 @@ export default {
     scheme: "safefamily",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/icon2.png",
+    icon: "./assets/icon3.png",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
 
