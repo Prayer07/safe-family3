@@ -38,7 +38,7 @@ export default {
           apiKey: process.env.GOOGLE_MAPS_API_KEY
         }
       },
-      googleServicesFile: "./android/app/google-services.json" // 👈 Add this
+      googleServicesFile: "./google-services.json" // 👈 Add this
     },
 
     web: {
