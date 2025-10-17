@@ -7,8 +7,8 @@ export default {
     scheme: "safefamily",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/icon3.png",
-    userInterfaceStyle: "automatic",
+    icon: "./assets/icon2.png",
+    userInterfaceStyle: "light",
     newArchEnabled: true,
 
     splash: {
@@ -38,7 +38,7 @@ export default {
           apiKey: process.env.GOOGLE_MAPS_API_KEY
         }
       },
-      googleServicesFile: "./google-services.json" // 👈 Add this
+      googleServicesFile: "./android/app/google-services.json" // 👈 Add this
     },
 
     web: {

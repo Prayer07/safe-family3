@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@react-native-firebase/app": "^23.4.1",
+    "@react-native-firebase/messaging": "^23.4.1",
+    "axios": "^1.12.2",
     "dotenv": "^17.2.3",
     "expo": "~54.0.10",
     "expo-clipboard": "~8.0.7",

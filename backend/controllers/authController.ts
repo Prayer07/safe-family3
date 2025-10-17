@@ -100,3 +100,25 @@ export const pushToken =  async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to save push token" });
   }
 };
+
+export const updatePushToken = async (req: Request, res: Response) => {
+  try {
+    const { userId, token } = req.body;
+    if (!userId || !token)
+      return res.status(400).json({ message: "Missing userId or token" });
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { pushToken: token },
+      { new: true }
+    );
+
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
+
+    res.json({ success: true, pushToken: token });
+  } catch (err) {
+    console.error("Error updating push token:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

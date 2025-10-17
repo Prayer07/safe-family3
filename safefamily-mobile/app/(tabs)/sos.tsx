@@ -1,8 +1,11 @@
 // app/(tabs)/sos.tsx
 import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, Modal, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, StyleSheet, Modal, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import { apiFetch } from "../../utils/apiClient";
+import * as Notifications from "expo-notifications";
+import { ExpoPushToken } from "expo-notifications";
+
 
 export default function SosScreen() {
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
@@ -16,19 +19,26 @@ export default function SosScreen() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        alert("Location permission required for SOS");
+        Alert.alert("Location permission required for SOS");
         setLoading(false);
         return;
       }
       const pos = await Location.getCurrentPositionAsync({});
+
+      const tokenResponse: ExpoPushToken = await Notifications.getExpoPushTokenAsync();
+      const token = tokenResponse.data;
+
+      console.log("Expo Token: " + token)
       const res = await apiFetch<{ _id: string; status: string }>("/sos/trigger", {
         method: "POST",
-        body: JSON.stringify({ coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } }),
+        body: JSON.stringify({token, coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } }),
       });
-      alert("SOS sent");
+
+      console.log('Response:', res);
+      Alert.alert("SOS sent");
       closeConfirm();
     } catch (err) {
-      alert("Failed to send SOS: " + (err as Error).message);
+      Alert.alert("Failed to send SOS: " + (err as Error).message);
     } finally {
       setLoading(false);
     }
