@@ -38,7 +38,7 @@ export default {
           apiKey: process.env.GOOGLE_MAPS_API_KEY
         }
       },
-      googleServicesFile: "/safefamily-mobile/android/app/google-services.json" // 👈 Add this
+      googleServicesFile: `${GOOGLE_SERVICES_JSON}` // 👈 Add this
     },
 
     web: {
