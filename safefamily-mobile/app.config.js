@@ -38,7 +38,7 @@ export default {
           apiKey: process.env.GOOGLE_MAPS_API_KEY
         }
       },
-      googleServicesFile: "./google-services.json" // 👈 Add this
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     },
 
     web: {
@@ -58,7 +58,7 @@ export default {
     ],
 
     extra: {
-      env: "staging",
+      env: "development",
       router: {},
       eas: {
         projectId: "fa80404a-41b1-43ba-a161-48bf25e65444"
