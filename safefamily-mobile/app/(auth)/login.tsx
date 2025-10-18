@@ -36,10 +36,10 @@ export default function LoginScreen() {
       Alert.alert("Push Token not available yet. Please wait a second")
       return
     }
-
     setLoading(true)
     try {
       await login(data.email, data.password, expoPushToken);
+      Alert.alert("Expo Push Token "+expoPushToken)
       router.replace("/"); // ✅ go to home after login
     } catch (err: any) {
       console.error("Login failed: ", err.message);
@@ -78,8 +78,6 @@ export default function LoginScreen() {
           {loading? "Logging in....." : "Login"}
         </Text>
       </Pressable>
-
-      <Text>{expoPushToken ? 'Push token loaded' : 'Fetching token...'}</Text>
 
       <ThemedText style={styles.footer}>
         Don’t have an account?{" "}
