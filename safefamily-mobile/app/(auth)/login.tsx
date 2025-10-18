@@ -8,6 +8,7 @@ import { useState } from "react";
 import ThemedText from "../../components/ThemedText";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import ThemedView from "../../components/ThemedView";
+import { usePushNotifications } from "../../hooks/usePushNotifications";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -20,6 +21,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false)
+  const expoPushToken = usePushNotifications()
 
   const {
     handleSubmit,
@@ -30,13 +32,18 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (data: LoginForm) => {
+    if (!expoPushToken){
+      Alert.alert("Push Token not available yet. Please wait a second")
+      return
+    }
+
     setLoading(true)
     try {
-      await login(data.email, data.password);
+      await login(data.email, data.password, expoPushToken);
       router.replace("/"); // ✅ go to home after login
     } catch (err: any) {
-      console.error("Login failed:", err.message);
-      Alert.alert("Login failed:", err.message)
+      console.error("Login failed: ", err.message);
+      Alert.alert("Login failed ", err.message)
     }finally{
       setLoading(false)
     }

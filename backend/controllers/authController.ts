@@ -51,13 +51,18 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body as { email: string; password: string };
+    const { email, password, pushToken } = req.body as { email: string; password: string; pushToken: string };
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
+
+    if (pushToken && !user.pushToken.includes(pushToken)) {
+    user.pushToken.push(pushToken);
+    await user.save();
+  }
 
     const token = generateToken(user);
     res.json({

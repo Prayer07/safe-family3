@@ -8,7 +8,7 @@ export interface IUser extends Document {
   passwordHash: string;
   avatarUrl?: string;
   lastActiveAt?: Date;
-  pushToken: String, // ✅ Add this
+  pushToken: [String], // ✅ Add this
   family?: mongoose.Types.ObjectId | null;
 }
 
@@ -19,7 +19,7 @@ const UserSchema = new Schema<IUser>({
   passwordHash: { type: String, required: true },
   avatarUrl: { type: String },
   lastActiveAt: { type: Date },
-  pushToken: {type: String}, // ✅ Add this
+  pushToken: {type: [String], default: []}, // ✅ Add this
   family: { type: Schema.Types.ObjectId, ref: "Family", default: null },
 }, { timestamps: true });
 

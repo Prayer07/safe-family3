@@ -12,7 +12,6 @@ export default function TabsLayout() {
   const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.light
   return (
     <>
-    <StatusBar style={colorScheme === "dark" ? "light" : "dark"} backgroundColor={theme.background} />
     <Tabs
       screenOptions={{
         headerShown: true,
