@@ -8,7 +8,7 @@ export interface IUser extends Document {
   passwordHash: string;
   avatarUrl?: string;
   lastActiveAt?: Date;
-  pushToken: [String], // ✅ Add this
+  pushToken?: string[], // ✅ Add this
   family?: mongoose.Types.ObjectId | null;
 }
 
@@ -19,40 +19,8 @@ const UserSchema = new Schema<IUser>({
   passwordHash: { type: String, required: true },
   avatarUrl: { type: String },
   lastActiveAt: { type: Date },
-  pushToken: {type: [String], default: []}, // ✅ Add this
+  pushToken: { type: [String], default: [] }, // ✅ Add this
   family: { type: Schema.Types.ObjectId, ref: "Family", default: null },
 }, { timestamps: true });
 
 export const User = mongoose.model<IUser>("User", UserSchema);
-
-
-
-// import mongoose, { Document, Schema } from "mongoose";
-
-// export interface IUser extends Document {
-//     name: string;
-//     phone?: string;
-//     email?: string;
-//     password?: string;
-//     avatarUrl?: string;
-//     createdAt?: Date;
-//     pushToken?: string;
-//     lastActiveAt?: Date;
-//     family?: mongoose.Types.ObjectId | null;
-// }
-
-// const UserSchema: Schema<IUser> = new Schema(
-//     {
-//         name: { type: String, required: true },
-//         phone: { type: String },
-//         email: { type: String, unique: true, sparse: true },
-//         password: { type: String },
-//         avatarUrl: { type: String },
-//         lastActiveAt: { type: Date },
-//         pushToken: {type: String},
-//         family: { type: Schema.Types.ObjectId, ref: "Family", default: null },
-//     },
-//     { timestamps: true }
-// );
-
-// export const User = mongoose.model<IUser>("User", UserSchema);

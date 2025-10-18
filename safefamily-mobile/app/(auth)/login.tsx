@@ -79,6 +79,8 @@ export default function LoginScreen() {
         </Text>
       </Pressable>
 
+      <Text>{expoPushToken ? 'Push token loaded' : 'Fetching token...'}</Text>
+
       <ThemedText style={styles.footer}>
         Don’t have an account?{" "}
         <Link href="/signup" style={styles.link}>
