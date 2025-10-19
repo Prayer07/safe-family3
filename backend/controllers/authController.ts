@@ -51,7 +51,7 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password, pushToken } = req.body;
+    const { email, password } = req.body as { email: string; password: string; }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
@@ -59,17 +59,8 @@ export const login = async (req: Request, res: Response) => {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
 
-    // ✅ Ensure pushToken array exists
-    if (!Array.isArray(user.pushToken)) user.pushToken = [];
-
-    // ✅ Add the device token if not already saved
-    if (pushToken && !user.pushToken.includes(pushToken)) {
-      user.pushToken.push(pushToken);
-      await user.save();
-    }
-
     const token = generateToken(user);
-    return res.json({
+    res.json({
       token,
       user: {
         id: user._id,
@@ -77,14 +68,13 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         phone: user.phone,
       },
+      // pushToken: user.pushToken
     });
-
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ message: "Server error" });
+  } catch (err: any) {
+    console.error("Login error: ", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const me = async (req: Request, res: Response) => {
   try {

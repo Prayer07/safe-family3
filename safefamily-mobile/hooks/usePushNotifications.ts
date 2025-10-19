@@ -21,9 +21,8 @@ export function usePushNotifications (){
   );
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => {
-      if (token) setExpoPushToken(token)
-    });
+
+  registerForPushNotificationsAsync().then(token => setExpoPushToken(token as string));
 
     if (Platform.OS === 'android') {
       Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));

@@ -40,11 +40,16 @@ export default function RootLayout() {
   useNotificationObserver();
   // usePushNotifications()
 
+  const color = useColorScheme()
+
   const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.dark
   
     return (
-    <AuthProvider>
+    <>
+    <StatusBar style={color === "dark"? "light" : "dark"} backgroundColor={theme.background}/>
+      <AuthProvider>
       <Slot />
-    </AuthProvider>
+      </AuthProvider>
+    </>
   );
 }

@@ -38,7 +38,7 @@ export default function LoginScreen() {
     }
     setLoading(true)
     try {
-      await login(data.email, data.password, expoPushToken);
+      await login(data.email, data.password);
       Alert.alert("Expo Push Token "+expoPushToken)
       router.replace("/"); // ✅ go to home after login
     } catch (err: any) {

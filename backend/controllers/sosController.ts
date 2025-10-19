@@ -31,55 +31,54 @@ export const triggerSos = async (req: Request, res: Response) => {
       responders: [],
     });
 
+    // Send push notifications to all family members
     const notifications = family.members
       .filter((member: any) => 
         member._id.toString() !== userId && 
-        Array.isArray(member.pushToken) && member.pushToken.length > 0
+        member.pushToken
       )
-      .flatMap((member: any) =>
-        member.pushToken.map((token: string) =>
-          sendPushNotification(
-            token,
-            "🚨 EMERGENCY ALERT",
-            `${user.name} needs help!`,
-            {
-              type: "sos",
-              sosId: family.toString(),
-              lat: coords?.lat?.toString() || "",
-              lng: coords?.lng?.toString() || "",
-              userName: user.name,
-            }
-          )
+      .map((member: any) =>
+        sendPushNotification(
+          member.pushToken,
+          "🚨 EMERGENCY ALERT",
+          `${user.name} needs help!`,
+          {
+            type: "sos",
+            sosId: family.toString(),
+            lat: coords?.lat?.toString() || "",
+            lng: coords?.lng?.toString() || "",
+            userName: user.name,
+          }
         )
-      )
+      );
 
-    await Promise.allSettled(notifications);
+    // const notifications = family.members
+    //   .filter((member: any) => 
+    //     member._id.toString() !== userId && 
+    //     Array.isArray(member.pushToken) && member.pushToken.length > 0
+    //   )
+    //   .flatMap((member: any) =>
+    //     member.pushToken.map((token: string) =>
+    //       sendPushNotification(
+    //         token,
+    //         "🚨 EMERGENCY ALERT",
+    //         `${user.name} needs help!`,
+    //         {
+    //           type: "sos",
+    //           sosId: family.toString(),
+    //           lat: coords?.lat?.toString() || "",
+    //           lng: coords?.lng?.toString() || "",
+    //           userName: user.name,
+    //         }
+    //       )
+    //     )
+    //   )
 
-    res.status(201).json(sos);
+    await Promise.allSettled(notifications)
+
+    res.status(201).json(sos)
   } catch (err) {
     console.error("SOS trigger error:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
-
-
-// // Send push notifications to all family members
-    // const notifications = family.members
-    //   .filter((member: any) => 
-    //     member._id.toString() !== userId && 
-    //     member.pushToken
-    //   )
-    //   .map((member: any) =>
-    //     sendPushNotification(
-    //       member.pushToken,
-    //       "🚨 EMERGENCY ALERT",
-    //       `${user.name} needs help!`,
-    //       {
-    //         type: "sos",
-    //         sosId: family.toString(),
-    //         lat: coords?.lat?.toString() || "",
-    //         lng: coords?.lng?.toString() || "",
-    //         userName: user.name,
-    //       }
-    //     )
-    //   );
