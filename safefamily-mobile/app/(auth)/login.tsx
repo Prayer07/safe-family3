@@ -21,7 +21,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false)
-  const expoPushToken = usePushNotifications()
+  // const expoPushToken = usePushNotifications()
 
   const {
     handleSubmit,
@@ -32,14 +32,14 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    if (!expoPushToken){
-      Alert.alert("Push Token not available yet. Please wait a second")
-      return
-    }
+    // if (!expoPushToken){
+    //   Alert.alert("Push Token not available yet. Please wait a second")
+    //   return
+    // }
     setLoading(true)
     try {
       await login(data.email, data.password);
-      Alert.alert("Expo Push Token "+expoPushToken)
+      // Alert.alert("Expo Push Token "+expoPushToken)
       router.replace("/"); // ✅ go to home after login
     } catch (err: any) {
       console.error("Login failed: ", err.message);
