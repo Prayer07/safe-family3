@@ -61,7 +61,7 @@ export default {
       env: "production",
       router: {},
       eas: {
-        projectId: "fa80404a-41b1-43ba-a161-48bf25e65444"
+        projectId: "73758bc4-c948-426a-aef7-9cdee76570ee"
       }
     }
   }
