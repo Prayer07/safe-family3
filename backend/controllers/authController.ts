@@ -69,7 +69,6 @@ export const login = async (req: Request, res: Response) => {
     }
     }
 
-
     const token = generateToken(user);
     res.json({
       token,
@@ -80,7 +79,8 @@ export const login = async (req: Request, res: Response) => {
         phone: user.phone,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
+    console.error("Login error: ", err);
     res.status(500).json({ message: "Server error" });
   }
 };
