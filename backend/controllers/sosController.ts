@@ -57,7 +57,6 @@ export const triggerSos = async (req: Request, res: Response) => {
     res.status(201).json(sos);
   } catch (err) {
     console.error("SOS trigger error:", err);
-    res.status(500).json({ message: "Server error" })
-    
+    res.status(500).json({ message: "Server error" });
   }
 }

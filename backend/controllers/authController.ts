@@ -78,6 +78,7 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         phone: user.phone,
       },
+      pushToken: user.pushToken
     });
   } catch (err: any) {
     console.error("Login error: ", err);
