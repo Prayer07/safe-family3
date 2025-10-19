@@ -31,26 +31,27 @@ export const triggerSos = async (req: Request, res: Response) => {
       responders: [],
     });
 
-    // Send push notifications to all family members
     const notifications = family.members
       .filter((member: any) => 
         member._id.toString() !== userId && 
-        member.pushToken
+        Array.isArray(member.pushToken) && member.pushToken.length > 0
       )
-      .map((member: any) =>
-        sendPushNotification(
-          member.pushToken,
-          "🚨 EMERGENCY ALERT",
-          `${user.name} needs help!`,
-          {
-            type: "sos",
-            sosId: family.toString(),
-            lat: coords?.lat?.toString() || "",
-            lng: coords?.lng?.toString() || "",
-            userName: user.name,
-          }
+      .flatMap((member: any) =>
+        member.pushToken.map((token: string) =>
+          sendPushNotification(
+            token,
+            "🚨 EMERGENCY ALERT",
+            `${user.name} needs help!`,
+            {
+              type: "sos",
+              sosId: family.toString(),
+              lat: coords?.lat?.toString() || "",
+              lng: coords?.lng?.toString() || "",
+              userName: user.name,
+            }
+          )
         )
-      );
+      )
 
     await Promise.allSettled(notifications);
 
@@ -60,3 +61,25 @@ export const triggerSos = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 }
+
+
+// // Send push notifications to all family members
+    // const notifications = family.members
+    //   .filter((member: any) => 
+    //     member._id.toString() !== userId && 
+    //     member.pushToken
+    //   )
+    //   .map((member: any) =>
+    //     sendPushNotification(
+    //       member.pushToken,
+    //       "🚨 EMERGENCY ALERT",
+    //       `${user.name} needs help!`,
+    //       {
+    //         type: "sos",
+    //         sosId: family.toString(),
+    //         lat: coords?.lat?.toString() || "",
+    //         lng: coords?.lng?.toString() || "",
+    //         userName: user.name,
+    //       }
+    //     )
+    //   );

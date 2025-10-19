@@ -44,7 +44,6 @@ export default function RootLayout() {
   
     return (
     <AuthProvider>
-      <StatusBar backgroundColor={theme.background} />
       <Slot />
     </AuthProvider>
   );
