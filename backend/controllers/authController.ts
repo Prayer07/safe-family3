@@ -44,6 +44,8 @@ export const signup = async (req: Request, res: Response) => {
         phone: user.phone,
       },
     });
+
+    console.log(token)
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -70,6 +72,7 @@ export const login = async (req: Request, res: Response) => {
       },
       // pushToken: user.pushToken
     });
+    console.log(token)
   } catch (err: any) {
     console.error("Login error: ", err);
     res.status(500).json({ message: "Server error" });

@@ -8,7 +8,7 @@ const ENV: Environment =
 
 const CONFIG = {
   development: {
-    API_URL: "http://10.47.19.65:5000/api", // replace with LAN IPv4
+    API_URL: "http://10.24.124.65:5000/api", // replace with LAN IPv4
   },
   staging: {
     API_URL: "https://safe-family3.vercel.app/api",

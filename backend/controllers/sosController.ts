@@ -52,6 +52,16 @@ export const triggerSos = async (req: Request, res: Response) => {
         )
       );
 
+    await Promise.allSettled(notifications)
+
+    res.status(201).json(sos)
+  } catch (err) {
+    console.error("SOS trigger error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+
     // const notifications = family.members
     //   .filter((member: any) => 
     //     member._id.toString() !== userId && 
@@ -73,12 +83,3 @@ export const triggerSos = async (req: Request, res: Response) => {
     //       )
     //     )
     //   )
-
-    await Promise.allSettled(notifications)
-
-    res.status(201).json(sos)
-  } catch (err) {
-    console.error("SOS trigger error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-}
