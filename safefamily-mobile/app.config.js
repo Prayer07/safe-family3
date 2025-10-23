@@ -8,7 +8,7 @@ export default {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon2.png",
-    userInterfaceStyle: "automatic",
+    userInterfaceStyle: "dark",
     newArchEnabled: true,
 
     splash: {
@@ -35,7 +35,7 @@ export default {
       package: "com.prayer072.safefamily",
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY
+          apiKey: process.env.GOOGLE_MAPS_API_KEY ?? "google-services.json"
         }
       },
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
@@ -58,7 +58,7 @@ export default {
     ],
 
     extra: {
-      env: "production",
+      env: "development",
       router: {},
       eas: {
         "projectId": "21d023ef-4aa3-4025-a292-fe0f1aeb6366"

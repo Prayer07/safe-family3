@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export function usePushNotifications (){
+export function usePushNotifications(){
   const [expoPushToken, setExpoPushToken] = useState('');
   const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
@@ -28,11 +28,13 @@ export function usePushNotifications (){
       Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
     }
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log("Notification Received whenever a notification is received while the app is running." + notification)
       setNotification(notification);
+      console.log("Notification Received whenever a notification is received while the app is running." + notification)
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      console.log("Notification Received whenever a user interacts with a notification (for example, taps on it." + response);
     });
 
     return () => {
@@ -42,20 +44,6 @@ export function usePushNotifications (){
   }, []);
 
   return expoPushToken
-}
-
-async function schedulePushNotification() {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: 'Here is the notification body',
-      data: { data: 'goes here', test: { test1: 'more data' } },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: 2,
-    },
-  });
 }
 
 async function registerForPushNotificationsAsync() {
@@ -96,12 +84,12 @@ async function registerForPushNotificationsAsync() {
         })
       ).data;
       console.log(token);
+      return token;
     } catch (e) {
-      token = `${e}`;
+      throw new Error (`${e}`)
     }
   } else {
     alert('Must use physical device for Push Notifications');
+    throw new Error('Must use physical device for Push Notifications');
   }
-
-  return token;
 }

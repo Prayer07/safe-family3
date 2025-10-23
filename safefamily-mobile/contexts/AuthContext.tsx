@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     await saveToken(res.token);
     setUser(res.user);
-  };
+  }
 
   const signup = async (name: string, email: string, password: string, phone?: string) => {
     const res = await apiFetch<AuthResponse>("/auth/signup", {

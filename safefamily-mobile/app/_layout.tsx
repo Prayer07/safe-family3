@@ -4,10 +4,10 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar"
 import { Colors } from "../constants/Color";
-import { usePushNotifications } from "../hooks/usePushNotifications";
 import { useEffect } from "react";
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 
 function useNotificationObserver() {
@@ -37,14 +37,14 @@ function useNotificationObserver() {
 export default function RootLayout() {
   const colorScheme = useColorScheme()
   console.log(colorScheme)
-  useNotificationObserver();
   usePushNotifications()
+  useNotificationObserver();
 
   // const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.dark
   
     return (
     <>
-    <StatusBar style={colorScheme === "dark"? "light" : "dark"}/>
+    <StatusBar style={"dark"}/>
       <AuthProvider>
       <Slot />
       </AuthProvider>
