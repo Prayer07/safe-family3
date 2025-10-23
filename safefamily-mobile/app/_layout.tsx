@@ -3,12 +3,10 @@ import { Slot } from "expo-router";
 import { AuthProvider } from "../contexts/AuthContext";
 import { useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar"
-import { Colors } from "../constants/Color";
 import { useEffect } from "react";
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { usePushNotifications } from "../hooks/usePushNotifications";
-
 
 function useNotificationObserver() {
   useEffect(() => {
@@ -19,10 +17,11 @@ function useNotificationObserver() {
       }
     }
 
-    const response = Notifications.getLastNotificationResponse();
-    if (response?.notification) {
-      redirect(response.notification);
-    }
+    Notifications.getLastNotificationResponseAsync().then(response => {
+      if (response?.notification) {
+        redirect(response.notification);
+      }
+    });
 
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       redirect(response.notification);
@@ -34,19 +33,26 @@ function useNotificationObserver() {
   }, []);
 }
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme()
-  console.log(colorScheme)
-  usePushNotifications()
+// This component is INSIDE AuthProvider
+function AppContent() {
+  usePushNotifications(); // ✅ Now it can access useAuth
   useNotificationObserver();
-
-  // const theme = Colors[colorScheme as keyof typeof Colors] ?? Colors.dark
   
-    return (
+  return <Slot />;
+}
+
+// This is the root - NO HOOKS HERE
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  console.log(colorScheme);
+
+  // ❌ DO NOT call usePushNotifications() here!
+  
+  return (
     <>
-    <StatusBar style={"dark"}/>
+      <StatusBar style={"dark"}/>
       <AuthProvider>
-      <Slot />
+        <AppContent />
       </AuthProvider>
     </>
   );

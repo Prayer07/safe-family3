@@ -3,10 +3,6 @@ import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet, Modal, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import { apiFetch } from "../../utils/apiClient";
-import * as Notifications from "expo-notifications";
-import { ExpoPushToken } from "expo-notifications";
-import Constants from "expo-constants";
-
 
 export default function SosScreen() {
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
@@ -24,22 +20,22 @@ export default function SosScreen() {
         setLoading(false);
         return;
       }
+      
       const pos = await Location.getCurrentPositionAsync({});
 
-      const projectId = Constants?.easConfig?.projectId ?? "21d023ef-4aa3-4025-a292-fe0f1aeb6366";
-      const token = await Notifications.getExpoPushTokenAsync({ projectId });
-
-      console.log("Expo Token: " + token)
       const res = await apiFetch<{ _id: string; status: string }>("/sos/trigger", {
         method: "POST",
-        body: JSON.stringify({token, coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } }),
+        body: JSON.stringify({
+          coords: { lat: pos.coords.latitude, lng: pos.coords.longitude }
+        }),
       });
 
-      console.log('Response:', res);
-      Alert.alert("SOS sent");
+      console.log('SOS Response:', res);
+      Alert.alert("✅ SOS Alert Sent", "Your family has been notified!");
       closeConfirm();
     } catch (err) {
-      Alert.alert("Failed to send SOS: " + (err as Error).message);
+      console.error("SOS Error:", err);
+      Alert.alert("❌ Failed to send SOS", (err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -54,16 +50,17 @@ export default function SosScreen() {
       <Modal visible={confirmVisible} transparent animationType="slide">
         <View style={styles.modalBack}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Send SOS?</Text>
+            <Text style={styles.modalTitle}>Send Emergency Alert?</Text>
+            <Text style={styles.modalSubtitle}>This will notify all family members</Text>
             {loading ? (
-              <ActivityIndicator size="large" />
+              <ActivityIndicator size="large" color="#FF3B30" />
             ) : (
               <>
                 <Pressable style={[styles.modalBtn, { backgroundColor: "#FF3B30" }]} onPress={sendSOS}>
-                  <Text style={styles.modalBtnText}>Send SOS</Text>
+                  <Text style={styles.modalBtnText}>🚨 Send SOS</Text>
                 </Pressable>
                 <Pressable style={[styles.modalBtn, { backgroundColor: "#ccc" }]} onPress={closeConfirm}>
-                  <Text style={styles.modalBtnText}>Cancel</Text>
+                  <Text style={[styles.modalBtnText, { color: "#000" }]}>Cancel</Text>
                 </Pressable>
               </>
             )}
@@ -84,11 +81,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   sosText: { color: "#fff", fontSize: 40, fontWeight: "700" },
-  modalBack: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center" },
+  modalBack: { flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "center", alignItems: "center" },
   modalBox: { backgroundColor: "#fff", padding: 24, borderRadius: 12, width: "80%" },
-  modalTitle: { fontSize: 18, fontWeight: "700", marginBottom: 16 },
-  modalBtn: { padding: 12, borderRadius: 8, marginTop: 8, alignItems: "center" },
-  modalBtnText: { color: "#fff", fontWeight: "700" },
+  modalTitle: { fontSize: 20, fontWeight: "700", marginBottom: 8, textAlign: "center" },
+  modalSubtitle: { fontSize: 14, color: "#666", marginBottom: 20, textAlign: "center" },
+  modalBtn: { padding: 14, borderRadius: 8, marginTop: 12, alignItems: "center" },
+  modalBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });

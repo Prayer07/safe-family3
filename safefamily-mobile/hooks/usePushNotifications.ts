@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
+// hooks/usePushNotifications.ts
+import { useEffect } from 'react';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import { apiFetch } from '../utils/apiClient';
+import { useAuth } from '../contexts/AuthContext';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,95 +16,80 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export function usePushNotifications(){
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-
-    registerForPushNotificationsAsync().then(async (token) => {
-      if (token) {
-        setExpoPushToken(token);
-        try {
-          await apiFetch("/auth/push-token", {
-            method: "POST",
-            body: JSON.stringify({ pushToken: token }),
-          });
-        } catch (err) {
-          console.error("Failed to save push token:", err);
-        }
-      }
-    });
-    
-    if (Platform.OS === 'android') {
-      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
-    }
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log("Notification Received whenever a notification is received while the app is running." + notification)
-      setNotification(notification);
-      console.log("Notification Received whenever a notification is received while the app is running." + notification)
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log("Notification Received whenever a user interacts with a notification (for example, taps on it." + response);
-    });
-
-    return () => {
-      notificationListener.remove();
-      responseListener.remove();
-    };
-  }, []);
-
-  return expoPushToken
-}
-
 async function registerForPushNotificationsAsync() {
-  let token;
-
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('myNotificationChannel', {
-      name: 'A channel is needed for the permissions prompt to appear',
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
+      sound: 'default',
     });
   }
 
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    // Learn more about projectId:
-    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    // EAS projectId is used here.
-    try {
-      const projectId =
-        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId ?? "21d023ef-4aa3-4025-a292-fe0f1aeb6366";
-      if (!projectId) {
-        throw new Error('Project ID not found');
-      }
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data;
-      console.log(token);
-      return token;
-    } catch (e) {
-      throw new Error (`${e}`)
-    }
-  } else {
-    alert('Must use physical device for Push Notifications');
-    throw new Error('Must use physical device for Push Notifications');
+  if (!Device.isDevice) {
+    console.warn('Must use physical device for push notifications');
+    return null;
   }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  
+  if (finalStatus !== 'granted') {
+    console.warn('Permission not granted for push notifications');
+    return null;
+  }
+
+  const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
+  if (!projectId) {
+    console.error('Project ID not found');
+    return null;
+  }
+
+  try {
+    const pushToken = await Notifications.getExpoPushTokenAsync({ projectId });
+    console.log('✅ Got push token:', pushToken.data);
+    return pushToken.data;
+  } catch (e) {
+    console.error('Failed to get push token:', e);
+    return null;
+  }
+}
+
+export function usePushNotifications() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    let isMounted = true;
+
+    const setupPushNotifications = async () => {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        
+        if (token && isMounted) {
+          // Save token to backend
+          await apiFetch('/auth/push-token', {
+            method: 'POST',
+            body: JSON.stringify({ pushToken: token }),
+          });
+          console.log('✅ Push token saved to backend');
+        }
+      } catch (error) {
+        console.error('Error setting up push notifications:', error);
+      }
+    };
+
+    setupPushNotifications();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 }

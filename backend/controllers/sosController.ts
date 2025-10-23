@@ -37,8 +37,9 @@ export const triggerSos = async (req: Request, res: Response) => {
         member._id.toString() !== userId && 
         member.pushToken
       )
-      .map((member: any) =>
-        sendPushNotification(
+      .map((member: any) => {
+        console.log(`📤 Sending notification to ${member.name} (${member.pushToken})`);
+        return sendPushNotification(
           member.pushToken,
           "🚨 EMERGENCY ALERT",
           `${user.name} needs help!`,
@@ -49,37 +50,15 @@ export const triggerSos = async (req: Request, res: Response) => {
             lng: coords?.lng?.toString() || "",
             userName: user.name,
           }
-        )
-      );
+        );
+      });
 
-    await Promise.allSettled(notifications)
+    const results = await Promise.allSettled(notifications);
+    console.log("Notification results:", results);
 
-    res.status(201).json(sos)
+    res.status(201).json(sos);
   } catch (err) {
     console.error("SOS trigger error:", err);
     res.status(500).json({ message: "Server error" });
   }
-}
-
-
-    // const notifications = family.members
-    //   .filter((member: any) => 
-    //     member._id.toString() !== userId && 
-    //     Array.isArray(member.pushToken) && member.pushToken.length > 0
-    //   )
-    //   .flatMap((member: any) =>
-    //     member.pushToken.map((token: string) =>
-    //       sendPushNotification(
-    //         token,
-    //         "🚨 EMERGENCY ALERT",
-    //         `${user.name} needs help!`,
-    //         {
-    //           type: "sos",
-    //           sosId: family.toString(),
-    //           lat: coords?.lat?.toString() || "",
-    //           lng: coords?.lng?.toString() || "",
-    //           userName: user.name,
-    //         }
-    //       )
-    //     )
-    //   )
+};
