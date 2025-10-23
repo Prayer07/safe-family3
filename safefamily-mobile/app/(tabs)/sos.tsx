@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import { apiFetch } from "../../utils/apiClient";
 import * as Notifications from "expo-notifications";
 import { ExpoPushToken } from "expo-notifications";
+import Constants from "expo-constants";
 
 
 export default function SosScreen() {
@@ -25,8 +26,8 @@ export default function SosScreen() {
       }
       const pos = await Location.getCurrentPositionAsync({});
 
-      const tokenResponse: ExpoPushToken = await Notifications.getExpoPushTokenAsync();
-      const token = tokenResponse.data;
+      const projectId = Constants?.easConfig?.projectId ?? "21d023ef-4aa3-4025-a292-fe0f1aeb6366";
+      const token = await Notifications.getExpoPushTokenAsync({ projectId });
 
       console.log("Expo Token: " + token)
       const res = await apiFetch<{ _id: string; status: string }>("/sos/trigger", {

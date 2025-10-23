@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { apiFetch } from '../utils/apiClient';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -22,8 +23,20 @@ export function usePushNotifications(){
 
   useEffect(() => {
 
-  registerForPushNotificationsAsync().then(token => setExpoPushToken(token as string));
-
+    registerForPushNotificationsAsync().then(async (token) => {
+      if (token) {
+        setExpoPushToken(token);
+        try {
+          await apiFetch("/auth/push-token", {
+            method: "POST",
+            body: JSON.stringify({ pushToken: token }),
+          });
+        } catch (err) {
+          console.error("Failed to save push token:", err);
+        }
+      }
+    });
+    
     if (Platform.OS === 'android') {
       Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
     }
@@ -74,7 +87,7 @@ async function registerForPushNotificationsAsync() {
     // EAS projectId is used here.
     try {
       const projectId =
-        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId ?? "21d023ef-4aa3-4025-a292-fe0f1aeb6366";
       if (!projectId) {
         throw new Error('Project ID not found');
       }
